@@ -1,0 +1,40 @@
+diff --git a/node_modules/@remix-run/dev/compiler.js b/node_modules/@remix-run/dev/compiler.js
+index 0705b93..0f10ff9 100644
+--- a/node_modules/@remix-run/dev/compiler.js
++++ b/node_modules/@remix-run/dev/compiler.js
+@@ -304,6 +304,13 @@ async function createBrowserBuild(config, options) {
+     entryPoints[id] = path__namespace.resolve(config.appDirectory, config.routes[id].file) + "?browser";
+   }
+ 
++  let plugins = [mdx.mdxPlugin(config), browserRouteModulesPlugin.browserRouteModulesPlugin(config, /\?browser$/), emptyModulesPlugin.emptyModulesPlugin(config, /\.server(\.[jt]sx?)?$/), nodeModulesPolyfill.NodeModulesPolyfillPlugin()];
++
++  if (config.serverBuildTarget === "deno") {
++    let { cache } = await import("esbuild-plugin-cache");
++    plugins.unshift(cache({ importmap: {} }));
++  }
++
+   return esbuild__namespace.build({
+     entryPoints,
+     outdir: config.assetsBuildDirectory,
+@@ -329,7 +336,7 @@ async function createBrowserBuild(config, options) {
+       "process.env.NODE_ENV": JSON.stringify(options.mode),
+       "process.env.REMIX_DEV_SERVER_WS_PORT": JSON.stringify(config.devServerPort)
+     },
+-    plugins: [mdx.mdxPlugin(config), browserRouteModulesPlugin.browserRouteModulesPlugin(config, /\?browser$/), emptyModulesPlugin.emptyModulesPlugin(config, /\.server(\.[jt]sx?)?$/), nodeModulesPolyfill.NodeModulesPolyfillPlugin()]
++    plugins
+   });
+ }
+ 
+diff --git a/node_modules/@remix-run/dev/compiler/dependencies.js b/node_modules/@remix-run/dev/compiler/dependencies.js
+index f4f0f6a..484f8d9 100644
+--- a/node_modules/@remix-run/dev/compiler/dependencies.js
++++ b/node_modules/@remix-run/dev/compiler/dependencies.js
+@@ -39,7 +39,7 @@ var path__namespace = /*#__PURE__*/_interopNamespace(path);
+ var readPackageJson__default = /*#__PURE__*/_interopDefaultLegacy(readPackageJson);
+ 
+ async function getPackageDependencies(packageJsonFile) {
+-  return (await readPackageJson__default["default"](packageJsonFile)).dependencies;
++  return (await readPackageJson__default["default"](packageJsonFile)).dependencies || {};
+ }
+ function getAppDependencies(config) {
+   return getPackageDependencies(path__namespace.resolve(config.rootDirectory, "package.json"));
