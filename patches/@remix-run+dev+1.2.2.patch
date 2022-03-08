@@ -1,0 +1,13 @@
+diff --git a/node_modules/@remix-run/dev/compiler/dependencies.js b/node_modules/@remix-run/dev/compiler/dependencies.js
+index f4f0f6a..484f8d9 100644
+--- a/node_modules/@remix-run/dev/compiler/dependencies.js
++++ b/node_modules/@remix-run/dev/compiler/dependencies.js
+@@ -39,7 +39,7 @@ var path__namespace = /*#__PURE__*/_interopNamespace(path);
+ var readPackageJson__default = /*#__PURE__*/_interopDefaultLegacy(readPackageJson);
+ 
+ async function getPackageDependencies(packageJsonFile) {
+-  return (await readPackageJson__default["default"](packageJsonFile)).dependencies;
++  return (await readPackageJson__default["default"](packageJsonFile)).dependencies || {};
+ }
+ function getAppDependencies(config) {
+   return getPackageDependencies(path__namespace.resolve(config.rootDirectory, "package.json"));
