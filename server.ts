@@ -1,8 +1,11 @@
 import { serve } from "https://deno.land/std/http/server.ts";
+import { installGlobals } from "https://esm.sh/@remix-run/deno/globals";
 
 import { createRequestHandlerWithStaticFiles } from "./remix-deno.ts";
 // @ts-ignore: provided by the build
 import * as build from "@remix-run/dev/server-build";
+
+installGlobals();
 
 const remixHandler = createRequestHandlerWithStaticFiles({
   build,

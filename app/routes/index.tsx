@@ -1,4 +1,22 @@
 import * as React from "https://esm.sh/react?pin=v59";
+import { json } from "https://esm.sh/@remix-run/server-runtime?pin=v59";
+
+import {
+  commitSession,
+  destroySession,
+  getSession,
+} from "../session.server.ts";
+
+export let loader = async ({ request }: any) => {
+  let session = await getSession(request.headers.get("Cookie"));
+  console.log({ existing: session.get("ROFL") });
+  session.set("ROFL", "COPTER");
+  return json(null, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
+};
 
 export default function Index() {
   let [state, setState] = React.useState("first");
